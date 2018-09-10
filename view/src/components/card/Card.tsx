@@ -32,7 +32,7 @@ export default class Card extends React.Component<CardProps> {
                 <div>
                     <h2 className="card__title">
                         <span>{this.props.title}</span>
-                        <span className={`card__status card__status--${this.props.status}`}></span>
+                        {/* <span className={`card__status card__status--${this.props.status}`}></span> */}
                     </h2>
                     <p className="card__subtitle">{this.props.subTitle}</p>
                 </div>

@@ -32,7 +32,7 @@
 }
 
 .card__status--positive {
-    background-color: #2dc937;
+    background-color: #008000;
 }
 
 .card__status--warning {
@@ -61,6 +61,25 @@
 }
 
 .card__detail {
-    padding: 0;
-    margin: 0;
+    padding: 0 0 0 1rem;
+    margin: 0 0 1rem 0;
+    position: relative;
+}
+
+.card__detail:before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 6px;
+    top: 0;
+    left: 0;
+    background-color: rgb(199, 199, 199);
+}
+
+.card__detail--negative:before {
+    background-color: #cc3232;
+}
+
+.card__detail--positive:before {
+    background-color: #008000;
 }
