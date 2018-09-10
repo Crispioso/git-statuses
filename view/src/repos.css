@@ -1,0 +1,29 @@
+.repos {
+    list-style: none;
+    margin: 1.5rem 0 0 0;
+    padding: 0;
+}
+
+.repos__item {
+    margin: 0;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #dadce0;
+    display: flex;
+    justify-content: space-between;
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.repos__name {
+    width: 30%;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.repos__status {
+    width: 40%;
+}
+
+.repos__branch {
+    width: 30%;
+}
