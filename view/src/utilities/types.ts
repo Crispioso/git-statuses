@@ -34,5 +34,15 @@ export interface RepoStatus {
 }
 
 export interface AppState {
-    repos: RepoStatus[]
+    repos: RepoStatus[],
+    isEditingFilters: boolean,
+    isFetchingAllRepos: boolean,
+    filters: Filters
+}
+
+export interface Filters {
+    showBehindRepos?: boolean
+    showAheadRepos?: boolean
+    showReposWithUncommittedChanges?: boolean
+    showCleanRepos?: boolean
 }

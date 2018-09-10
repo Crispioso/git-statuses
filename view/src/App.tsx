@@ -2,58 +2,47 @@ import * as React from "react";
 import * as Redux from 'redux';
 import { connect } from 'react-redux';
 
-import { RepoStatus, APIStatus, AppState } from "./utilities/types";
+import { RepoStatus, APIStatus, AppState, Filters } from "./utilities/types";
 import './app.css';
 import './repos.css';
 import './grid.css';
 import api from "./utilities/api";
 import Header from "./components/header/Header";
 import Card, { CardDetail, CardStatus } from "./components/card/Card";
-import { addRepos } from "./state/actions";
+import { addRepos, toggleFiltersEditing, toggleIsFetchingAllRepos } from "./state/actions";
+import EditFiltersController from "./edit-filters/EditFiltersController";
+import applyFilters from "./utilities/filter";
+import Mapper from "./utilities/mapper";
 
 interface ReduxProps {
-    repos: RepoStatus[]
+    repos: RepoStatus[],
+    isFetchingAllRepos: boolean,
+    isEditingFilters: boolean,
+    filters: Filters
 }
 
 interface DispatchProps {
-    addRepos: (repos: RepoStatus[]) => void
+    addRepos: (repos: RepoStatus[]) => void,
+    toggleIsFetchingAllRepos: () => void,
+    toggleFiltersEditing: () => void
 }
 
 type Props = ReduxProps & DispatchProps;
 
-interface State {
-    isFetchingRepos: boolean
-}
-
-class App extends React.Component<Props, State> {
+class App extends React.Component<Props> {
     constructor(props: Props) {
         super(props);
-
-        this.state = {
-            isFetchingRepos: false
-        }
     }
 
     async componentDidMount() {
-        this.setState({isFetchingRepos: true});
-        const repos: RepoStatus[] = this.mapResponseToState(await api.getStatuses());
+        this.props.toggleIsFetchingAllRepos();
+        const repos: RepoStatus[] = applyFilters(Mapper.responseToState(await api.getStatuses()), this.props.filters);
         this.props.addRepos(repos);
-        this.setState({isFetchingRepos: false});
+        this.props.toggleIsFetchingAllRepos();
     }
 
-    mapResponseToState(response: APIStatus[]): RepoStatus[] {
-        return response.map((status: APIStatus): RepoStatus => ({
-            name: status.name,
-            ahead: status.ahead,
-            behind: status.behind,
-            current: status.current,
-            created: status.created,
-            deleted: status.deleted,
-            modified: status.modified,
-            differentFiles: status.files.length,
-            renamed: status.renamed,
-            staged: status.staged
-        }));
+    toggleEditView = () => {
+        this.props.toggleFiltersEditing();
     }
 
     renderCommits(repo: RepoStatus): string {
@@ -129,6 +118,10 @@ class App extends React.Component<Props, State> {
     }
 
     renderRepos() {
+        if (this.props.repos.length === 0) {
+            return <p>No repos to display :(</p>
+        }
+
         return (
             <div className="repos grid-container">
                 {this.props.repos.map(repo => {
@@ -151,9 +144,12 @@ class App extends React.Component<Props, State> {
     render() {
         return (
             <div>
-                <Header/>
+                {this.props.isEditingFilters &&
+                    <EditFiltersController />
+                }
+                <Header onEdit={this.toggleEditView} editIsDisabled={this.props.isFetchingAllRepos}/>
                 <main>
-                    {this.state.isFetchingRepos ? 
+                    {this.props.isFetchingAllRepos ? 
                         <p>Loading...</p>
                     :
                         this.renderRepos()
@@ -166,11 +162,16 @@ class App extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: AppState): ReduxProps => ({
-    repos: state.repos
+    repos: state.repos,
+    isFetchingAllRepos: state.isFetchingAllRepos,
+    isEditingFilters: state.isEditingFilters,
+    filters: state.filters
 });
 
 const mapDispatchToProps = (dispatch: Redux.Dispatch): DispatchProps => ({
-    addRepos: (repos: RepoStatus[]) => dispatch(addRepos(repos))
+    addRepos: (repos: RepoStatus[]) => dispatch(addRepos(repos)),
+    toggleIsFetchingAllRepos: () => dispatch(toggleIsFetchingAllRepos()),
+    toggleFiltersEditing: () => dispatch(toggleFiltersEditing())
 });
 
 export default connect<ReduxProps, DispatchProps>(mapStateToProps, mapDispatchToProps)(App);

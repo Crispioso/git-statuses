@@ -1,7 +1,15 @@
 import { AppState, RepoStatus } from "../utilities/types";
 
 export const initialState: AppState = {
-    repos: []
+    repos: [],
+    isEditingFilters: false,
+    isFetchingAllRepos: false,
+    filters: {
+        showBehindRepos: true,
+        showAheadRepos: true,
+        showReposWithUncommittedChanges: true,
+        showCleanRepos: true
+    }
 }
 
 /**
@@ -9,6 +17,12 @@ export const initialState: AppState = {
  */
 export enum ActionTypeKeys {
     ADD_REPOS = "ADD_REPOS",
+    IS_FETCHING_ALL_REPOS = "IS_FETCHING_ALL_REPOS",
+    TOGGLE_SHOW_BEHIND_FILTER = "TOGGLE_SHOW_BEHIND_FILTER",
+    TOGGLE_SHOW_AHEAD_FILTER = "TOGGLE_SHOW_AHEAD_FILTER",
+    TOGGLE_SHOW_CLEAN_FILTER = "TOGGLE_SHOW_CLEAN_FILTER",
+    TOGGLE_SHOW_UNCOMMITTED_CHANGES_FILTER = "TOGGLE_SHOW_UNCOMMITTED_CHANGES_FILTER",
+    TOGGLE_IS_EDITING_FILTERS = "TOGGLE_IS_EDITING_FILTERS",
     REDUX_INIT = "@@INIT",
     OTHER_ACTION = "OTHER_ACTION"
 }
@@ -16,6 +30,30 @@ export enum ActionTypeKeys {
 interface AddRepos {
     type: ActionTypeKeys.ADD_REPOS;
     repos: RepoStatus[]
+}
+
+interface ToggleIsFetchingAllRepos {
+    type: ActionTypeKeys.IS_FETCHING_ALL_REPOS
+}
+
+interface ToggleIsEditingFilters {
+    type: ActionTypeKeys.TOGGLE_IS_EDITING_FILTERS;
+}
+
+interface ToggleShowBehindFilter {
+    type: ActionTypeKeys.TOGGLE_SHOW_BEHIND_FILTER;
+}
+
+interface ToggleShowAheadFilter {
+    type: ActionTypeKeys.TOGGLE_SHOW_AHEAD_FILTER;
+}
+
+interface ToggleShowCleanFilter {
+    type: ActionTypeKeys.TOGGLE_SHOW_CLEAN_FILTER;
+}
+
+interface ToggleShowUncommittedChangesFilter {
+    type: ActionTypeKeys.TOGGLE_SHOW_UNCOMMITTED_CHANGES_FILTER;
 }
 
 interface OtherAction {
@@ -28,6 +66,12 @@ interface ReduxInit {
 
 export type ActionTypes = (
     AddRepos |
+    ToggleIsFetchingAllRepos |
+    ToggleShowBehindFilter |
+    ToggleShowAheadFilter |
+    ToggleShowCleanFilter |
+    ToggleShowUncommittedChangesFilter |
+    ToggleIsEditingFilters |
     OtherAction |
     ReduxInit
 )

@@ -2,13 +2,46 @@
     background-color: #6200ea;
     color: #fff;
     margin: 0;
-    padding: 0;
+    padding: 0 2rem;
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),0px 4px 5px 0px rgba(0, 0, 0, 0.14),0px 1px 10px 0px rgba(0, 0, 0, 0.12);
     font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .header__title {
-    font-size: 1.3rem;
-    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    padding: 1rem 0;
     margin: 0;
+}
+
+.header__action {
+    text-transform: uppercase;
+    background: unset;
+    letter-spacing: 1px;
+    border-radius: 2px;
+    margin: 0.6rem 0;
+    border: 2px solid #fff;
+    font-size: inherit;
+    color: inherit;
+    height: auto;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+
+.header__action:focus {
+    outline: 0;
+}
+
+.header__action:hover {
+    cursor: pointer;
+}
+
+.header__action:disabled {
+    opacity: 0.5;
+    cursor: default;
 }
