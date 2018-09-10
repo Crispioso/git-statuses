@@ -1,24 +1,35 @@
 import * as React from "react";
+import * as Redux from 'redux';
+import { connect } from 'react-redux';
+
+import { RepoStatus, APIStatus, AppState } from "./utilities/types";
 import './app.css';
 import './repos.css';
-import Header from "./components/header/Header";
-import api from "./utilities/api";
-import Card, { CardDetail, CardStatus } from "./components/card/Card";
 import './grid.css';
+import api from "./utilities/api";
+import Header from "./components/header/Header";
+import Card, { CardDetail, CardStatus } from "./components/card/Card";
+import { addRepos } from "./state/actions";
 
-interface Props {}
+interface ReduxProps {
+    repos: RepoStatus[]
+}
+
+interface DispatchProps {
+    addRepos: (repos: RepoStatus[]) => void
+}
+
+type Props = ReduxProps & DispatchProps;
 
 interface State {
-    repos: RepoStatus[],
     isFetchingRepos: boolean
 }
 
-export default class App extends React.Component<Props, State> {
+class App extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
         this.state = {
-            repos: [],
             isFetchingRepos: false
         }
     }
@@ -26,10 +37,8 @@ export default class App extends React.Component<Props, State> {
     async componentDidMount() {
         this.setState({isFetchingRepos: true});
         const repos: RepoStatus[] = this.mapResponseToState(await api.getStatuses());
-        this.setState({
-            repos,
-            isFetchingRepos: false
-        });
+        this.props.addRepos(repos);
+        this.setState({isFetchingRepos: false});
     }
 
     mapResponseToState(response: APIStatus[]): RepoStatus[] {
@@ -122,7 +131,7 @@ export default class App extends React.Component<Props, State> {
     renderRepos() {
         return (
             <div className="repos grid-container">
-                {this.state.repos.map(repo => {
+                {this.props.repos.map(repo => {
                     const details: CardDetail[] = this.getRepoDetails(repo);
                     const status: CardStatus = this.getRepoStatus(repo);
                     return (
@@ -155,3 +164,13 @@ export default class App extends React.Component<Props, State> {
         )
     }
 }
+
+const mapStateToProps = (state: AppState): ReduxProps => ({
+    repos: state.repos
+});
+
+const mapDispatchToProps = (dispatch: Redux.Dispatch): DispatchProps => ({
+    addRepos: (repos: RepoStatus[]) => dispatch(addRepos(repos))
+});
+
+export default connect<ReduxProps, DispatchProps>(mapStateToProps, mapDispatchToProps)(App);
