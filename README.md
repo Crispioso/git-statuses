@@ -15,6 +15,7 @@ make start
 ```
 
 ## To do
+- Add unit tests!
 - Add 'Developing' heading to README.md and update Makefile to make it more obvious how to develop the app yourself.
 - Add an icon and favicon to the UI.
 - Allow the path to the `config.json` file to be configurable when the app is run.
