@@ -7,7 +7,7 @@ git-statuses
 
 First, make sure that you've got [NodeJS](https://nodejs.org/en/) and [NPM](https://www.npmjs.com/) installed.
 
-You have to create a valid [config file](#creating-a-config-file) to have been created before starting the app.
+You have to create a valid [config file](#creating-a-config-file) before starting the app.
 
 Finally, start the app with:
 ```
