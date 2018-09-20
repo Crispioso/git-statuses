@@ -7,12 +7,44 @@ git-statuses
 
 First, make sure that you've got [NodeJS](https://nodejs.org/en/) and [NPM](https://www.npmjs.com/) installed.
 
-The app requires
+You have to create a valid [config file](#creating-a-config-file) to have been created before starting the app.
 
-Then run the following command in the root of this repo:
+Finally, start the app with:
 ```
 make start
 ```
+
+### Creating a config file
+
+The config file is a `config.json` file that lives in the root of this project.
+
+There are two ways to set what git repos are checked by the app:
+
+#### Setting a root directory
+
+Include an absolute path to the directory that has all of the Git repos you want the app to discover
+
+```json
+{
+    rootDirectory: "/Users/myname/code/src/github.com/crispioso"
+}
+```
+
+#### Setting individual repo paths
+
+Include an array of absolute paths to the Git repos you want the app to discover
+
+```json
+{
+    paths: [
+        "/Users/myname/code/src/github.com/crispioso/project1"
+        "/Users/myname/code/src/github.com/crispioso/project2"
+        "/Users/myname/code/src/github.com/crispioso/project3"
+    ]
+}
+```
+
+**Note**: If both `rootDirectory` and `paths` are included, then `paths` will be used by the app
 
 ## To do
 - Add unit tests!
