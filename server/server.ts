@@ -8,6 +8,7 @@ import { join } from 'path';
 import getRepoName from 'git-repo-name';
 
 const app = express();
+let latestStatuses: Status[] = []
 
 type Config = {
     rootDirectory: string,
@@ -71,8 +72,36 @@ const getStatuses: () => Promise<Status[]> = async () => {
 
 const handleStatus = async (req: Request, res: Response) => {
     const statuses: Status[] = await getStatuses();
+    latestStatuses = statuses;
     res.json(statuses);
 };
+
+const handleFetch = async (req: Request, res: Response) => {
+    const repoName: string = req.params.repo;
+    const currentStatus: Status = latestStatuses.find((status: Status) => status.name === repoName);
+    const dir: git.SimpleGit = await git(currentStatus.local_path);
+    const isRepo: boolean = await dir.checkIsRepo();
+
+    if (!isRepo) {
+        res.status(404).send("{message: 'Repo not found'}");
+        return;
+    }
+
+    await dir.fetch().catch(error => {
+        console.error("Error fetching from remote", error);
+        res.status(500).send("{message: 'Error fetching from remote'}");
+        return;
+    });
+
+    const response: git.StatusResult = await dir.status();
+    const status: Status = {
+        local_path: currentStatus.local_path,
+        name: repoName,
+        ...response
+    };
+
+    res.json(status);
+}
 
 app.use(function (req, res, next) {
     console.log("Incoming request...", req.path);
@@ -80,6 +109,7 @@ app.use(function (req, res, next) {
 });
 app.set("port", process.env.PORT || 3000);
 app.get("/statuses", handleStatus);
+app.post("/statuses/:repo/fetch", handleFetch);
 app.use("/assets", express.static(path.resolve('../assets')));
 app.get("*", (_, res) => {
     res.sendFile(path.resolve('../index.html'));
