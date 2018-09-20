@@ -1,14 +1,13 @@
 {
-  "name": "paasbox-frontend",
+  "name": "git-statuses-frontend",
   "version": "0.0.1",
-  "description": "Frontend UI for PaasBox",
-  "main": "index.js",
+  "description": "Frontend UI for git statuses application",
+  "main": "index.tsx",
   "scripts": {
     "test": "test",
     "build": "NODE_ENV=production webpack -p --config webpack.config.js --mode=production",
     "build:dev": "NODE_ENV=development webpack --config webpack.config.js --mode=development",
-    "watch": "NODE_ENV=development webpack -w --config webpack.config.js --mode=development",
-    "type-check": "flow"
+    "watch": "NODE_ENV=development webpack -w --config webpack.config.js --mode=development"
   },
   "author": "Crispin Merriman",
   "license": "MIT",
@@ -21,7 +20,7 @@
     "@babel/preset-typescript": "^7.0.0-beta.55",
     "@types/react": "^16.4.7",
     "@types/react-dom": "^16.0.6",
-    "@types/react-redux": "^6.0.6",
+    "@types/react-redux": "^6.0.7",
     "babel-core": "^7.0.0-bridge.0",
     "babel-loader": "^7.1.5",
     "css-loader": "^1.0.0",

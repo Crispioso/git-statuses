@@ -1,4 +1,4 @@
-interface APIStatus {
+export interface APIStatus {
     not_added: string[];
     conflicted: string[];
     created: string[];
@@ -17,9 +17,10 @@ interface APIStatus {
     tracking: string;
     local_path: string;
     name: string;
+    dirName?: string;
 }
 
-interface RepoStatus {
+export interface RepoStatus {
     name: string;
     ahead: number;
     behind: number;
@@ -30,4 +31,19 @@ interface RepoStatus {
     renamed: string[];
     staged: string[];
     differentFiles: number;
+    isUpdating?: boolean
+}
+
+export interface AppState {
+    repos: RepoStatus[],
+    isEditingFilters: boolean,
+    isFetchingAllRepos: boolean,
+    filters: Filters
+}
+
+export interface Filters {
+    showBehindRepos?: boolean
+    showAheadRepos?: boolean
+    showReposWithUncommittedChanges?: boolean
+    showCleanRepos?: boolean
 }

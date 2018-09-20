@@ -1,50 +1,52 @@
 import * as React from "react";
+import * as Redux from 'redux';
+import { connect } from 'react-redux';
+
+import { RepoStatus, APIStatus, AppState, Filters } from "./utilities/types";
 import './app.css';
 import './repos.css';
-import Header from "./components/header/Header";
-import api from "./utilities/api";
-import Card, { CardDetail, CardStatus } from "./components/card/Card";
 import './grid.css';
+import api from "./utilities/api";
+import Header from "./components/header/Header";
+import Card, { CardDetail, CardStatus } from "./components/card/Card";
+import { addRepos, toggleFiltersEditing, toggleIsFetchingAllRepos, updateRepo, toggleRepoIsUpdating } from "./state/actions";
+import EditFiltersController from "./edit-filters/EditFiltersController";
+import applyFilters from "./utilities/filter";
+import Mapper from "./utilities/mapper";
 
-interface Props {}
-
-interface State {
+interface ReduxProps {
     repos: RepoStatus[],
-    isFetchingRepos: boolean
+    isFetchingAllRepos: boolean,
+    isEditingFilters: boolean,
+    filters: Filters
 }
 
-export default class App extends React.Component<Props, State> {
+interface DispatchProps {
+    addRepos: (repos: RepoStatus[]) => void,
+    updateRepo: (repo: RepoStatus) => void,
+    toggleRepoIsUpdating: (repoName: string) => void,
+    toggleIsFetchingAllRepos: () => void,
+    toggleFiltersEditing: () => void
+}
+
+type Props = ReduxProps & DispatchProps;
+
+class App extends React.Component<Props> {
     constructor(props: Props) {
         super(props);
-
-        this.state = {
-            repos: [],
-            isFetchingRepos: false
-        }
     }
 
     async componentDidMount() {
-        this.setState({isFetchingRepos: true});
-        const repos: RepoStatus[] = this.mapResponseToState(await api.getStatuses());
-        this.setState({
-            repos,
-            isFetchingRepos: false
-        });
+        this.props.toggleIsFetchingAllRepos();
+        const response: APIStatus[] = await api.getStatuses();
+        const repos: RepoStatus[] = response.map((status: APIStatus): RepoStatus => Mapper.responseToState(status));
+        const filteredRepos: RepoStatus[] = applyFilters(repos, this.props.filters);
+        this.props.addRepos(filteredRepos);
+        this.props.toggleIsFetchingAllRepos();
     }
 
-    mapResponseToState(response: APIStatus[]): RepoStatus[] {
-        return response.map((status: APIStatus): RepoStatus => ({
-            name: status.name,
-            ahead: status.ahead,
-            behind: status.behind,
-            current: status.current,
-            created: status.created,
-            deleted: status.deleted,
-            modified: status.modified,
-            differentFiles: status.files.length,
-            renamed: status.renamed,
-            staged: status.staged
-        }));
+    toggleEditView = () => {
+        this.props.toggleFiltersEditing();
     }
 
     renderCommits(repo: RepoStatus): string {
@@ -119,10 +121,24 @@ export default class App extends React.Component<Props, State> {
         return details;
     }
 
+    handleRefresh = async (repoID: string) => {
+        this.props.toggleRepoIsUpdating(repoID);
+        const response: APIStatus = await api.refreshRepo(repoID);
+        const status: RepoStatus = {
+            ...Mapper.responseToState(response),
+            isUpdating: false
+        };
+        this.props.updateRepo(status);
+    }
+
     renderRepos() {
+        if (this.props.repos.length === 0) {
+            return <p>No repos to display :(</p>
+        }
+
         return (
             <div className="repos grid-container">
-                {this.state.repos.map(repo => {
+                {this.props.repos.map(repo => {
                     const details: CardDetail[] = this.getRepoDetails(repo);
                     const status: CardStatus = this.getRepoStatus(repo);
                     return (
@@ -132,6 +148,8 @@ export default class App extends React.Component<Props, State> {
                             subTitle={repo.current}
                             details={details}
                             status={status}
+                            onRefresh={() => this.handleRefresh(repo.name)}
+                            isLoading={repo.isUpdating}
                         />
                     )
                 })}
@@ -142,9 +160,12 @@ export default class App extends React.Component<Props, State> {
     render() {
         return (
             <div>
-                <Header/>
+                {this.props.isEditingFilters &&
+                    <EditFiltersController />
+                }
+                <Header onEdit={this.toggleEditView} editIsDisabled={this.props.isFetchingAllRepos}/>
                 <main>
-                    {this.state.isFetchingRepos ? 
+                    {this.props.isFetchingAllRepos ? 
                         <p>Loading...</p>
                     :
                         this.renderRepos()
@@ -155,3 +176,20 @@ export default class App extends React.Component<Props, State> {
         )
     }
 }
+
+const mapStateToProps = (state: AppState): ReduxProps => ({
+    repos: state.repos,
+    isFetchingAllRepos: state.isFetchingAllRepos,
+    isEditingFilters: state.isEditingFilters,
+    filters: state.filters
+});
+
+const mapDispatchToProps = (dispatch: Redux.Dispatch): DispatchProps => ({
+    addRepos: (repos: RepoStatus[]) => dispatch(addRepos(repos)),
+    updateRepo: (repo: RepoStatus) => dispatch(updateRepo(repo)),
+    toggleRepoIsUpdating: (repoName: string) => dispatch(toggleRepoIsUpdating(repoName)),
+    toggleIsFetchingAllRepos: () => dispatch(toggleIsFetchingAllRepos()),
+    toggleFiltersEditing: () => dispatch(toggleFiltersEditing())
+});
+
+export default connect<ReduxProps, DispatchProps>(mapStateToProps, mapDispatchToProps)(App);
