@@ -26,7 +26,7 @@ Include an absolute path to the directory that has all of the Git repos you want
 
 ```json
 {
-    rootDirectory: "/Users/myname/code/src/github.com/crispioso"
+    "rootDirectory": "/Users/myname/code/src/github.com/crispioso"
 }
 ```
 
@@ -36,7 +36,7 @@ Include an array of absolute paths to the Git repos you want the app to discover
 
 ```json
 {
-    paths: [
+    "paths": [
         "/Users/myname/code/src/github.com/crispioso/project1"
         "/Users/myname/code/src/github.com/crispioso/project2"
         "/Users/myname/code/src/github.com/crispioso/project3"
