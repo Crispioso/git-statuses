@@ -17,6 +17,7 @@ export interface APIStatus {
     tracking: string;
     local_path: string;
     name: string;
+    dirName?: string;
 }
 
 export interface RepoStatus {

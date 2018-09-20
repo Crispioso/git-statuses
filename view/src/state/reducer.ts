@@ -1,5 +1,5 @@
 import { ActionTypes, ActionTypeKeys, initialState } from "./stateTypes";
-import { AppState } from "../utilities/types";
+import { AppState, RepoStatus } from "../utilities/types";
 
 export default function reducer(state: AppState = initialState, action: ActionTypes) {
     switch (action.type) {
@@ -13,6 +13,31 @@ export default function reducer(state: AppState = initialState, action: ActionTy
             return {
                 ...state,
                 repos: [...action.repos]
+            }
+        }
+        case(ActionTypeKeys.UPDATE_REPO): {
+            return {
+                ...state,
+                repos: state.repos.map((repo: RepoStatus): RepoStatus => {
+                    if (repo.name !== action.repo.name) {
+                        return repo;
+                    }
+                    return {...action.repo};
+                })
+            }
+        }
+        case(ActionTypeKeys.TOGGLE_REPO_IS_UPDATING): {
+            return {
+                ...state,
+                repos: state.repos.map((repo: RepoStatus): RepoStatus => {
+                    if (repo.name !== action.repoName) {
+                        return repo;
+                    }
+                    return {
+                        ...repo,
+                        isUpdating: !repo.isUpdating
+                    };
+                })
             }
         }
         case(ActionTypeKeys.IS_FETCHING_ALL_REPOS): {

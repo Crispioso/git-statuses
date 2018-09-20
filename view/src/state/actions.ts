@@ -6,6 +6,16 @@ export const addRepos = (repos: RepoStatus[]) => ({
     repos
 });
 
+export const updateRepo = (repo: RepoStatus) => ({
+    type: ActionTypeKeys.UPDATE_REPO,
+    repo
+});
+
+export const toggleRepoIsUpdating = (repoName: string) => ({
+    type: ActionTypeKeys.TOGGLE_REPO_IS_UPDATING,
+    repoName
+});
+
 export const toggleIsFetchingAllRepos = () => ({
     type: ActionTypeKeys.IS_FETCHING_ALL_REPOS,
 });

@@ -17,6 +17,8 @@ export const initialState: AppState = {
  */
 export enum ActionTypeKeys {
     ADD_REPOS = "ADD_REPOS",
+    UPDATE_REPO = "UPDATE_REPO",
+    TOGGLE_REPO_IS_UPDATING = "TOGGLE_REPO_IS_UPDATING",
     IS_FETCHING_ALL_REPOS = "IS_FETCHING_ALL_REPOS",
     TOGGLE_SHOW_BEHIND_FILTER = "TOGGLE_SHOW_BEHIND_FILTER",
     TOGGLE_SHOW_AHEAD_FILTER = "TOGGLE_SHOW_AHEAD_FILTER",
@@ -30,6 +32,16 @@ export enum ActionTypeKeys {
 interface AddRepos {
     type: ActionTypeKeys.ADD_REPOS;
     repos: RepoStatus[]
+}
+
+interface UpdateRepo {
+    type: ActionTypeKeys.UPDATE_REPO;
+    repo: RepoStatus
+}
+
+interface ToggleRepoIsUpdating {
+    type: ActionTypeKeys.TOGGLE_REPO_IS_UPDATING;
+    repoName: string
 }
 
 interface ToggleIsFetchingAllRepos {
@@ -66,6 +78,8 @@ interface ReduxInit {
 
 export type ActionTypes = (
     AddRepos |
+    UpdateRepo |
+    ToggleRepoIsUpdating |
     ToggleIsFetchingAllRepos |
     ToggleShowBehindFilter |
     ToggleShowAheadFilter |

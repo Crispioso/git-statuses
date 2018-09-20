@@ -3,7 +3,7 @@ import * as Redux from 'redux';
 import { connect } from 'react-redux';
 import Modal from '../components/modal/Modal';
 import Checkbox from '../components/inputs/Checkbox';
-import { AppState, Filters, RepoStatus } from '../utilities/types';
+import { AppState, Filters, RepoStatus, APIStatus } from '../utilities/types';
 import { toggleFiltersEditing, toggleShowBehindFilter, toggleIsFetchingAllRepos, addRepos, toggleShowAheadFilter, toggleShowCleanFilter, toggleShowUncommittedChangesFilter } from '../state/actions';
 import applyFilters from '../utilities/filter';
 import Mapper from '../utilities/mapper';
@@ -47,8 +47,10 @@ class EditFiltersController extends React.Component<Props, State> {
 
     updateStateWithNewRepos = async (filters: Filters) => {
         this.props.toggleIsFetchingAllRepos();
-        const repos: RepoStatus[] = applyFilters(Mapper.responseToState(await api.getStatuses()), filters);
-        this.props.addRepos(repos);
+        const response: APIStatus[] = await api.getStatuses();
+        const repos: RepoStatus[] = response.map((status: APIStatus): RepoStatus => Mapper.responseToState(status));
+        const filteredRepos: RepoStatus[] = applyFilters(repos, filters);
+        this.props.addRepos(filteredRepos);
         this.props.toggleIsFetchingAllRepos();
     }
 
